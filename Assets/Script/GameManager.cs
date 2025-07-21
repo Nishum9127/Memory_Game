@@ -1,5 +1,4 @@
-// GameManager.cs
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,8 +14,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI scoreText;
 
     [Header("Card Images")]
-    public List<Sprite> cardImages; // <-- animal images (fronts)
-    public Sprite backImage;        // <-- default back image
+    public List<Sprite> cardImages; // animal images (front)
+    public Sprite backImage;        // default card back image
 
     private List<Card> cards = new List<Card>();
     private Card firstCard, secondCard;
@@ -34,6 +33,7 @@ public class GameManager : MonoBehaviour
     {
         int total = rows * cols;
         var imageList = new List<Sprite>();
+
         for (int i = 0; i < total / 2; i++)
         {
             imageList.Add(cardImages[i]);
@@ -46,24 +46,22 @@ public class GameManager : MonoBehaviour
         {
             var cardObj = Instantiate(cardPrefab, grid.transform);
             var card = cardObj.GetComponent<Card>();
-            card.Init(imageList[i]);  // pass only the sprite
+            card.Init(imageList[i]);
             cards.Add(card);
         }
 
         AdjustCardSize(rows, cols);
     }
+
     private void AdjustCardSize(int rows, int cols)
     {
-        // Get the size of the parent container
         RectTransform rt = grid.GetComponent<RectTransform>();
         float width = rt.rect.width;
         float height = rt.rect.height;
 
-        // Add spacing margin if needed
         float spacingX = grid.spacing.x;
         float spacingY = grid.spacing.y;
 
-        // Calculate the available size per cell
         float cellWidth = (width - ((cols - 1) * spacingX)) / cols;
         float cellHeight = (height - ((rows - 1) * spacingY)) / rows;
 
@@ -72,8 +70,28 @@ public class GameManager : MonoBehaviour
 
     public void CardFlipped(Card card)
     {
-        if (!canFlip) return;
+        if (card.isMatched || card == firstCard || card == secondCard)
+            return;
 
+        // 👇 Check if 2 cards already flipped
+        if (firstCard != null && secondCard != null)
+        {
+            // ✅ Mismatch: Hide both before flipping new card
+            if (firstCard.id != secondCard.id)
+            {
+                firstCard.HideCard();
+                secondCard.HideCard();
+            }
+
+            // Clear previous references
+            firstCard = null;
+            secondCard = null;
+        }
+
+        // 👇 Flip the current clicked card
+        card.FlipCard();
+
+        // Assign to first or second slot
         if (firstCard == null)
         {
             firstCard = card;
@@ -82,36 +100,24 @@ public class GameManager : MonoBehaviour
         {
             secondCard = card;
 
-            // Don't allow more flips until checked
-            canFlip = false;
+            // ✅ Check match
+            if (firstCard.id == secondCard.id)
+            {
+                firstCard.isMatched = true;
+                secondCard.isMatched = true;
 
-            StartCoroutine(CheckMatch());
+                firstCard.LockCard();
+                secondCard.LockCard();
+
+                score += 10;
+                UpdateScore();
+                SaveGame();
+
+                // Reset match pair for next round
+                firstCard = null;
+                secondCard = null;
+            }
         }
-    }
-
-    private IEnumerator CheckMatch()
-    {
-        yield return new WaitForSeconds(1f); // Short delay to show both flipped cards
-
-        if (firstCard.id == secondCard.id)
-        {
-            firstCard.isMatched = true;
-            secondCard.isMatched = true;
-
-            // Optional: Play match sound
-        }
-        else
-        {
-            firstCard.HideCard();
-            secondCard.HideCard();
-
-            // Optional: Play mismatch sound
-        }
-
-        // Reset
-        firstCard = null;
-        secondCard = null;
-        canFlip = true;
     }
     void SaveGame()
     {
@@ -125,5 +131,8 @@ public class GameManager : MonoBehaviour
         GenerateBoard(2, 3); // default
     }
 
-    void UpdateScore() => scoreText.text = $"Score: {score}";
+    void UpdateScore()
+    {
+        scoreText.text = $"Score: {score}";
+    }
 }
