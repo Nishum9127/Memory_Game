@@ -14,8 +14,8 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI scoreText;
 
     [Header("Card Images")]
-    public List<Sprite> cardImages; // animal images (front)
-    public Sprite backImage;        // default card back image
+    public List<Sprite> cardImages;
+    public Sprite backImage;
 
     private List<Card> cards = new List<Card>();
     private Card firstCard, secondCard;
@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < total / 2; i++)
         {
             imageList.Add(cardImages[i]);
-            imageList.Add(cardImages[i]); // Add pair
+            imageList.Add(cardImages[i]);
         }
 
         imageList = imageList.OrderBy(x => Random.value).ToList();
@@ -73,7 +73,6 @@ public class GameManager : MonoBehaviour
         if (card.isMatched || card == firstCard || card == secondCard)
             return;
 
-        // 👇 Check if 2 cards already flipped
         if (firstCard != null && secondCard != null)
         {
             // ✅ Mismatch: Hide both before flipping new card
@@ -88,10 +87,8 @@ public class GameManager : MonoBehaviour
             secondCard = null;
         }
 
-        // 👇 Flip the current clicked card
         card.FlipCard();
 
-        // Assign to first or second slot
         if (firstCard == null)
         {
             firstCard = card;
@@ -112,13 +109,21 @@ public class GameManager : MonoBehaviour
                 score += 10;
                 UpdateScore();
                 SaveGame();
-
                 // Reset match pair for next round
                 firstCard = null;
                 secondCard = null;
             }
+            else StartCoroutine(HideAfterDelay(firstCard, secondCard));
         }
     }
+    private IEnumerator HideAfterDelay(Card c1, Card c2)
+    {
+        yield return new WaitForSeconds(1f);
+
+        c1.HideCard();
+        c2.HideCard();
+    }
+
     void SaveGame()
     {
         SaveManager.SaveScore(score);
