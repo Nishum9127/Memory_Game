@@ -36,8 +36,6 @@ public class Card : MonoBehaviour
     public void OnClick()
     {
         if (isMatched || isFlipped) return;
-        Debug.Log("C C " + id);
-        //FlipCard();
         GameManager.Instance.CardFlipped(this);
     }
 
@@ -48,8 +46,8 @@ public class Card : MonoBehaviour
 
     //    // Use animation or scale tween
     //    isFlipped = true;
-    //    frontImage.gameObject.SetActive(true);   // ✅ show front
-    //    backImage.gameObject.SetActive(false);   // ✅ hide back
+    //    frontImage.gameObject.SetActive(true);
+    //    backImage.gameObject.SetActive(false);
     //    // Play flip sound
     //}
 
@@ -71,18 +69,15 @@ public class Card : MonoBehaviour
 
     private IEnumerator FlipRoutine(bool showFront)
     {
-        // Step 1: Shrink X to 0
         for (float i = 1; i >= 0; i -= Time.deltaTime * 5f)
         {
             transform.localScale = new Vector3(i, 1, 1);
             yield return null;
         }
 
-        // Step 2: Switch Image
         frontImage.gameObject.SetActive(showFront);
         backImage.gameObject.SetActive(!showFront);
 
-        // Step 3: Expand X to 1
         for (float i = 0; i <= 1; i += Time.deltaTime * 5f)
         {
             transform.localScale = new Vector3(i, 1, 1);

@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public GameObject cardPrefab;
     public GridLayoutGroup grid;
     public TextMeshProUGUI scoreText;
+    public GameObject gameCompletePanel;
 
     [Header("Card Images")]
     public List<Sprite> cardImages;
@@ -20,12 +21,28 @@ public class GameManager : MonoBehaviour
     private List<Card> cards = new List<Card>();
     Card firstCard, secondCard;
     private int score = 0;
+    public int maxMoves = 6;
+    private int remainingMoves;
+
+    public TextMeshProUGUI movesText;
+    public TextMeshProUGUI gameOverText;
+    public GameObject gameOverPanel;
+    public Button restart;
+    private Dictionary<string, int> gridMoves = new Dictionary<string, int>()
+    {
+        { "2x2", 3 },
+        { "2x3", 6 },
+        { "4x4", 20 },
+        { "5x6", 30 }
+    };
+    private string currentGridKey = "2x3";
 
     void Awake() => Instance = this;
 
     void Start()
     {
         LoadGame();
+        restart.onClick.AddListener(RestartGame);
     }
 
     public void GenerateBoard(int rows, int cols)
@@ -94,6 +111,9 @@ public class GameManager : MonoBehaviour
         {
             secondCard = card;
 
+            remainingMoves--;
+            UpdateMoves();
+
             if (firstCard.id == secondCard.id)
             {
                 SoundManager.Instance.PlayMatchSound();
@@ -106,14 +126,36 @@ public class GameManager : MonoBehaviour
                 score += 10;
                 UpdateScore();
                 SaveGame();
-                // Reset match pair for next round
+
                 firstCard = null;
                 secondCard = null;
-                CheckGameComplete();
+                if (cards.All(c => c.isMatched))
+                    CheckGameComplete();
             }
             else StartCoroutine(HideAfterDelay(firstCard, secondCard));
+
+            if (remainingMoves <= 0 && !cards.All(c => c.isMatched))
+            {
+                GameOver();
+            }
         }
     }
+    void GameOver()
+    {
+        int totalMoves = gridMoves[currentGridKey];
+        int totalMovesUsed = totalMoves - remainingMoves;
+
+        int bestRemaining = PlayerPrefs.GetInt($"BestMoves_{currentGridKey}", -1);
+        int bestMovesUsed = (bestRemaining != -1) ? (totalMoves - bestRemaining) : -1;
+
+        if (bestMovesUsed != -1)
+            gameOverText.text = $"Game Over\nYour Moves: {totalMovesUsed}\nBest: {bestMovesUsed} Moves";
+        else
+            gameOverText.text = $"Game Over\nYour Moves: {totalMovesUsed}\nNo Record";
+
+        gameOverPanel.SetActive(true);
+    }
+
     private IEnumerator HideAfterDelay(Card c1, Card c2)
     {
         SoundManager.Instance.PlayMismatchSound();
@@ -125,38 +167,107 @@ public class GameManager : MonoBehaviour
 
     void SaveGame()
     {
-        SaveManager.SaveScore(score);
-    }
+        string key = $"BestMoves_{currentGridKey}";
+        int prevBest = PlayerPrefs.GetInt(key, int.MaxValue);
 
+        int totalMovesUsed = gridMoves[currentGridKey] - remainingMoves;
+
+        if (totalMovesUsed < prevBest)
+            PlayerPrefs.SetInt(key, totalMovesUsed);
+    }
     void LoadGame()
     {
-        score = SaveManager.LoadScore();
+        int defaultRows = 2;
+        int defaultCols = 3;
+        currentGridKey = $"{defaultRows}x{defaultCols}";
+
+        if (gridMoves.ContainsKey(currentGridKey))
+            remainingMoves = gridMoves[currentGridKey];
+        else
+            remainingMoves = 15; // fallback
+
         UpdateScore();
-        GenerateBoard(2, 3);
+        UpdateMoves();
+        cards.Clear();
+
+        foreach (Transform child in grid.transform)
+            Destroy(child.gameObject);
+
+        GenerateBoard(defaultRows, defaultCols);
     }
+
     private void CheckGameComplete()
     {
-        bool allMatched = cards.All(card => card.isMatched);
-        if (allMatched)
+        if (cards.All(c => c.isMatched))
         {
-            //SoundManager.Instance.PlayGameOverSound(); // ✅ 🎵
-            Debug.Log("🎉 Game Complete!");
-
-            // TODO: Show UI panel for win or restart
+            SoundManager.Instance.PlayGameOverSound();
+            ShowGameCompleteUI();
         }
+    }
+
+    private void ShowGameCompleteUI()
+    {
+        gameCompletePanel.SetActive(true);
     }
 
     public void OnGridSizeSelected(int rows, int cols)
     {
         SoundManager.Instance.PlayButtonClickSound();
-        // Clear old cards
         foreach (Transform child in grid.transform)
             Destroy(child.gameObject);
 
+        currentGridKey = $"{rows}x{cols}";
+
+        if (gridMoves.ContainsKey(currentGridKey))
+            remainingMoves = gridMoves[currentGridKey];
+        else
+            remainingMoves = 15;
+
+        UpdateMoves();
         cards.Clear();
 
-        // Generate new
         GenerateBoard(rows, cols);
+    }
+
+    void UpdateMoves()
+    {
+        movesText.text = $"Moves: {remainingMoves}";
+    }
+    public void RestartGame()
+    {
+        foreach (var card in cards)
+        {
+            Destroy(card.gameObject);
+        }
+        cards.Clear();
+
+        firstCard = null;
+        secondCard = null;
+
+        score = 0;
+        remainingMoves = maxMoves;
+
+        UpdateScore();
+        UpdateMoves();
+
+        gameOverPanel.SetActive(false);
+        gameCompletePanel.SetActive(false);
+
+        GenerateBoard(2, 3);
+    }
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            ResetAllBests();
+        }
+    }
+    public void ResetAllBests()
+    {
+        foreach (var key in gridMoves.Keys)
+        {
+            PlayerPrefs.DeleteKey($"BestMoves_{key}");
+        }
     }
 
     void UpdateScore()
