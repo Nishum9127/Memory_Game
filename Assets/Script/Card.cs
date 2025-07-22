@@ -1,17 +1,19 @@
-﻿// Card.cs
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class Card : MonoBehaviour
 {
-    public int id; // To match with another card
+    public int id;
     public Sprite frontSprite;
     public Image frontImage, backImage;
     public bool isFlipped = false;
     public bool isMatched = false;
+    Animator animator;
+
     void Start()
     {
         GetComponent<Button>().onClick.AddListener(OnClick);
+        animator = GetComponent<Animator>();
 
         frontImage.gameObject.SetActive(false);
         backImage.gameObject.SetActive(true);
@@ -23,8 +25,8 @@ public class Card : MonoBehaviour
         frontImage.sprite = front;
         id = front.GetInstanceID();
 
-        frontImage.gameObject.SetActive(false); // ✅ start hidden
-        backImage.gameObject.SetActive(true);   // ✅ start visible
+        frontImage.gameObject.SetActive(false);
+        backImage.gameObject.SetActive(true);
 
         isFlipped = false;
         isMatched = false;
@@ -49,12 +51,29 @@ public class Card : MonoBehaviour
         // Play flip sound
     }
 
+    //public void FlipCard()
+    //{
+    //    isFlipped = true;
+    //    animator.SetTrigger("Flip");
+    //    animator.ResetTrigger("Idle");
+    //}
+    //public void ShowFront()
+    //{
+    //    frontImage.gameObject.SetActive(true);
+    //    backImage.gameObject.SetActive(false);
+    //}
+    //public void ShowBack()
+    //{
+    //    frontImage.gameObject.SetActive(false);
+    //    backImage.gameObject.SetActive(true);
+    //}
+
     public void HideCard()
     {
         isFlipped = false;
 
-        frontImage.gameObject.SetActive(false);  // ✅ hide front
-        backImage.gameObject.SetActive(true);    // ✅ show back
+        frontImage.gameObject.SetActive(false);
+        backImage.gameObject.SetActive(true);
     }
 
     public void LockCard()

@@ -18,9 +18,8 @@ public class GameManager : MonoBehaviour
     public Sprite backImage;
 
     private List<Card> cards = new List<Card>();
-    private Card firstCard, secondCard;
+    public Card firstCard, secondCard;
     private int score = 0;
-    private bool canFlip = true;
 
     void Awake() => Instance = this;
 
@@ -75,14 +74,12 @@ public class GameManager : MonoBehaviour
 
         if (firstCard != null && secondCard != null)
         {
-            // ✅ Mismatch: Hide both before flipping new card
             if (firstCard.id != secondCard.id)
             {
                 firstCard.HideCard();
                 secondCard.HideCard();
             }
 
-            // Clear previous references
             firstCard = null;
             secondCard = null;
         }
@@ -97,7 +94,6 @@ public class GameManager : MonoBehaviour
         {
             secondCard = card;
 
-            // ✅ Check match
             if (firstCard.id == secondCard.id)
             {
                 firstCard.isMatched = true;
@@ -133,7 +129,18 @@ public class GameManager : MonoBehaviour
     {
         score = SaveManager.LoadScore();
         UpdateScore();
-        GenerateBoard(2, 3); // default
+        GenerateBoard(2, 3);
+    }
+    public void OnGridSizeSelected(int rows, int cols)
+    {
+        // Clear old cards
+        foreach (Transform child in grid.transform)
+            Destroy(child.gameObject);
+
+        cards.Clear();
+
+        // Generate new
+        GenerateBoard(rows, cols);
     }
 
     void UpdateScore()
