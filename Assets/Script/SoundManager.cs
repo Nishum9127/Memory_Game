@@ -8,6 +8,7 @@ public class SoundManager : MonoBehaviour
     public AudioClip matchClip;
     public AudioClip mismatchClip;
     public AudioClip gameOverClip;
+    public AudioClip GridBtnClick;
     public AudioClip btnClick;
     public AudioClip backgroundMusic;
 
@@ -53,7 +54,11 @@ public class SoundManager : MonoBehaviour
     {
         audioSource.PlayOneShot(gameOverClip);
     }
-    public void PlayButtonClickSound()
+    public void PlayGridCreationSound()
+    {
+        audioSource.PlayOneShot(GridBtnClick);
+    }
+    public void PlayBtnClickSound()
     {
         audioSource.PlayOneShot(btnClick);
     }

@@ -27,7 +27,10 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI movesText;
     public TextMeshProUGUI gameOverText;
     public GameObject gameOverPanel;
+    public GameObject startPanel;
+
     public Button restart;
+    public Button start;
     private Dictionary<string, int> gridMoves = new Dictionary<string, int>()
     {
         { "2x2", 3 },
@@ -43,6 +46,13 @@ public class GameManager : MonoBehaviour
     {
         LoadGame();
         restart.onClick.AddListener(RestartGame);
+        start.onClick.AddListener(StartGame);
+    }
+    public void StartGame()
+    {
+        SoundManager.Instance.PlayBtnClickSound();
+        startPanel.SetActive(false);
+        OnGridSizeSelected(2, 3);
     }
 
     public void GenerateBoard(int rows, int cols)
@@ -184,7 +194,7 @@ public class GameManager : MonoBehaviour
         if (gridMoves.ContainsKey(currentGridKey))
             remainingMoves = gridMoves[currentGridKey];
         else
-            remainingMoves = 15; // fallback
+            remainingMoves = 15;
 
         UpdateScore();
         UpdateMoves();
@@ -212,7 +222,7 @@ public class GameManager : MonoBehaviour
 
     public void OnGridSizeSelected(int rows, int cols)
     {
-        SoundManager.Instance.PlayButtonClickSound();
+        SoundManager.Instance.PlayGridCreationSound();
         foreach (Transform child in grid.transform)
             Destroy(child.gameObject);
 
@@ -235,6 +245,8 @@ public class GameManager : MonoBehaviour
     }
     public void RestartGame()
     {
+        SoundManager.Instance.PlayBtnClickSound();
+
         foreach (var card in cards)
         {
             Destroy(card.gameObject);
@@ -245,7 +257,11 @@ public class GameManager : MonoBehaviour
         secondCard = null;
 
         score = 0;
-        remainingMoves = maxMoves;
+
+        int rows = int.Parse(currentGridKey.Split('x')[0]);
+        int cols = int.Parse(currentGridKey.Split('x')[1]);
+
+        remainingMoves = gridMoves[currentGridKey];
 
         UpdateScore();
         UpdateMoves();
@@ -253,8 +269,9 @@ public class GameManager : MonoBehaviour
         gameOverPanel.SetActive(false);
         gameCompletePanel.SetActive(false);
 
-        GenerateBoard(2, 3);
+        GenerateBoard(rows, cols);
     }
+
     private void Update()
     {
         if (Input.GetKey(KeyCode.Space))

@@ -55,7 +55,10 @@ public class Card : MonoBehaviour
     {
         if (isFlipped) return;
         isFlipped = true;
-        StartCoroutine(FlipRoutine(true));
+        if (this != null)
+        {
+            StartCoroutine(FlipRoutine(true));
+        }
         SoundManager.Instance.PlayFlipSound();
     }
 
@@ -63,7 +66,10 @@ public class Card : MonoBehaviour
     {
         if (!isFlipped) return;
         isFlipped = false;
-        StartCoroutine(FlipRoutine(false));
+        if (this != null)
+        {
+            StartCoroutine(FlipRoutine(false));
+        }
     }
 
 
