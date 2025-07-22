@@ -11,6 +11,7 @@ public class SoundManager : MonoBehaviour
     public AudioClip GridBtnClick;
     public AudioClip btnClick;
     public AudioClip backgroundMusic;
+    public AudioClip winSound;
 
     private AudioSource audioSource;
 
@@ -53,6 +54,10 @@ public class SoundManager : MonoBehaviour
     public void PlayGameOverSound()
     {
         audioSource.PlayOneShot(gameOverClip);
+    }
+    public void PlayGameWinSound()
+    {
+        audioSource.PlayOneShot(winSound);
     }
     public void PlayGridCreationSound()
     {

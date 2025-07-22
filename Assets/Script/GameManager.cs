@@ -152,6 +152,8 @@ public class GameManager : MonoBehaviour
     }
     void GameOver()
     {
+        SoundManager.Instance.PlayGameOverSound();
+
         int totalMoves = gridMoves[currentGridKey];
         int totalMovesUsed = totalMoves - remainingMoves;
 
@@ -210,7 +212,7 @@ public class GameManager : MonoBehaviour
     {
         if (cards.All(c => c.isMatched))
         {
-            SoundManager.Instance.PlayGameOverSound();
+            SoundManager.Instance.PlayGameWinSound();
             ShowGameCompleteUI();
         }
     }

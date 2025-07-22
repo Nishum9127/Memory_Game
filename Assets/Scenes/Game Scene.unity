@@ -716,7 +716,6 @@ GameObject:
   - component: {fileID: 316534015}
   - component: {fileID: 316534016}
   - component: {fileID: 316534018}
-  - component: {fileID: 316534017}
   m_Layer: 5
   m_Name: Grid change Buttons
   m_TagString: Untagged
@@ -774,36 +773,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &316534017
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 316534014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!222 &316534018
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2281,6 +2250,7 @@ MonoBehaviour:
   GridBtnClick: {fileID: 8300000, guid: 19e8b553eec2e5845801a95629f560b1, type: 3}
   btnClick: {fileID: 8300000, guid: e2453405b11e77842b8b381ddc48dc3e, type: 3}
   backgroundMusic: {fileID: 8300000, guid: 3ab76d381855c61459d12b7177acd13f, type: 3}
+  winSound: {fileID: 8300000, guid: edb66d7143340304996144e6d27aa468, type: 3}
 --- !u!82 &858772822
 AudioSource:
   m_ObjectHideFlags: 0
