@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 3071519588317408558}
   - component: {fileID: 5940756876462427882}
   - component: {fileID: 1390740022158720627}
-  - component: {fileID: 8338949132902145158}
   m_Layer: 5
   m_Name: Card
   m_TagString: Untagged
@@ -111,28 +110,6 @@ MonoBehaviour:
   backImage: {fileID: 3091134192580093805}
   isFlipped: 0
   isMatched: 0
---- !u!95 &8338949132902145158
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1137367699946886742}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 185c782b70926e546b6a919b6aad971e, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &4694354738496491208
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,7 +177,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 0}
   m_Type: 0
-  m_PreserveAspect: 1
+  m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -275,7 +252,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 0}
   m_Type: 0
-  m_PreserveAspect: 1
+  m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1

@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     public Sprite backImage;
 
     private List<Card> cards = new List<Card>();
-    public Card firstCard, secondCard;
+    Card firstCard, secondCard;
     private int score = 0;
 
     void Awake() => Instance = this;
@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
 
     public void CardFlipped(Card card)
     {
-        if (card.isMatched || card == firstCard || card == secondCard)
+        if (card.isMatched)
             return;
 
         if (firstCard != null && secondCard != null)
@@ -96,6 +96,7 @@ public class GameManager : MonoBehaviour
 
             if (firstCard.id == secondCard.id)
             {
+                SoundManager.Instance.PlayMatchSound();
                 firstCard.isMatched = true;
                 secondCard.isMatched = true;
 
@@ -108,14 +109,16 @@ public class GameManager : MonoBehaviour
                 // Reset match pair for next round
                 firstCard = null;
                 secondCard = null;
+                CheckGameComplete();
             }
             else StartCoroutine(HideAfterDelay(firstCard, secondCard));
         }
     }
     private IEnumerator HideAfterDelay(Card c1, Card c2)
     {
-        yield return new WaitForSeconds(1f);
+        SoundManager.Instance.PlayMismatchSound();
 
+        yield return new WaitForSeconds(1f);
         c1.HideCard();
         c2.HideCard();
     }
@@ -131,8 +134,21 @@ public class GameManager : MonoBehaviour
         UpdateScore();
         GenerateBoard(2, 3);
     }
+    private void CheckGameComplete()
+    {
+        bool allMatched = cards.All(card => card.isMatched);
+        if (allMatched)
+        {
+            //SoundManager.Instance.PlayGameOverSound(); // ✅ 🎵
+            Debug.Log("🎉 Game Complete!");
+
+            // TODO: Show UI panel for win or restart
+        }
+    }
+
     public void OnGridSizeSelected(int rows, int cols)
     {
+        SoundManager.Instance.PlayButtonClickSound();
         // Clear old cards
         foreach (Transform child in grid.transform)
             Destroy(child.gameObject);
